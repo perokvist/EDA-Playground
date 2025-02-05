@@ -18,7 +18,7 @@ jobs:
     - name : dapr install
       uses: dapr/setup-dapr@v1
       with:
-        version: "1.15.0.rc.3"
+        version: "1.15.0-rc.5"
         id: install
     - uses: actions/checkout@v4
     - name: Setup .NET
