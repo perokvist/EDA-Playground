@@ -13,8 +13,13 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-
+    
     steps:
+    - name : dapr install
+      uses: dapr/setup-dapr@v1
+      with:
+        version: "1.15.0.rc.3"
+        id: install
     - uses: actions/checkout@v4
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
