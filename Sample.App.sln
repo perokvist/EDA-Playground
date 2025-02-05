@@ -1,0 +1,47 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.12.35707.178
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sample.App", "src\Sample.App\Sample.App.csproj", "{CC125270-A61B-40AF-903C-2E27171F616B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sample.App.AppHost", "src\Sample.App.AppHost\Sample.App.AppHost.csproj", "{65AB07A8-FA25-47D7-AFEE-60251D088579}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sample.App.ServiceDefaults", "src\Sample.App.ServiceDefaults\Sample.App.ServiceDefaults.csproj", "{3487DA10-0504-490D-81A6-713496F1490F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "dapr", "dapr", "{A974B35D-96F9-4BA3-89AB-F60383696E59}"
+	ProjectSection(SolutionItems) = preProject
+		src\resources\pubsub.in-memory.yml = src\resources\pubsub.in-memory.yml
+		src\resources\state.cosmos._yml = src\resources\state.cosmos._yml
+		src\resources\state.in-memory.yml = src\resources\state.in-memory.yml
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sample.App.AppHost.Tests", "test\Sample.App.AppHost.Tests\Sample.App.AppHost.Tests.csproj", "{094D4E67-A181-4D86-8A1A-31242D443B79}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CC125270-A61B-40AF-903C-2E27171F616B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CC125270-A61B-40AF-903C-2E27171F616B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CC125270-A61B-40AF-903C-2E27171F616B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CC125270-A61B-40AF-903C-2E27171F616B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{65AB07A8-FA25-47D7-AFEE-60251D088579}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{65AB07A8-FA25-47D7-AFEE-60251D088579}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{65AB07A8-FA25-47D7-AFEE-60251D088579}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{65AB07A8-FA25-47D7-AFEE-60251D088579}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3487DA10-0504-490D-81A6-713496F1490F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3487DA10-0504-490D-81A6-713496F1490F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3487DA10-0504-490D-81A6-713496F1490F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3487DA10-0504-490D-81A6-713496F1490F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{094D4E67-A181-4D86-8A1A-31242D443B79}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{094D4E67-A181-4D86-8A1A-31242D443B79}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{094D4E67-A181-4D86-8A1A-31242D443B79}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{094D4E67-A181-4D86-8A1A-31242D443B79}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

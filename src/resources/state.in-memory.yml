@@ -1,0 +1,12 @@
+apiVersion: dapr.io/v1alpha1
+kind: Component
+metadata:
+  name: stateStore
+spec:
+  type: state.in-memory
+  version: v1
+  metadata: 
+  - name: outboxPublishPubsub # Required
+    value: "pubSub"
+  - name: outboxPublishTopic # Required
+    value: "sample"
