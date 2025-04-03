@@ -7,7 +7,8 @@
     <RuntimeIdentifiers>linux-x64</RuntimeIdentifiers>
     <EnableSdkContainerDebugging>True</EnableSdkContainerDebugging>
     <ContainerBaseImage>mcr.microsoft.com/dotnet/aspnet:9.0</ContainerBaseImage>
-    <UserSecretsId>5d548fcb-5716-4f18-8428-f6ef38538f3b</UserSecretsId>
+    <UserSecretsId>a6909745-bf3f-4616-a66c-3f28669d17dc</UserSecretsId>
+    <DockerfileContext>..\..</DockerfileContext>
   </PropertyGroup>
 
   <ItemGroup>
@@ -15,9 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Dapr.AspNetCore" Version="1.15.2" />
-    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.3" />
-    <PackageReference Include="Scalar.AspNetCore" Version="2.1.4" />
+    <PackageReference Include="EsiNet.AspNetCore" Version="0.4.0" />
   </ItemGroup>
 
   <ItemGroup>

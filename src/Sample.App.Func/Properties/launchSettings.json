@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "Sample.App.Func": {
+      "commandName": "Project",
+      "commandLineArgs": "--port 7160",
+      "launchBrowser": false
+    }
+  }
+}

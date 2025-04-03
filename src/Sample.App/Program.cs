@@ -1,19 +1,25 @@
 using System.Text.Json;
-using Dapr;
-using Dapr.Client;
 using Sample.App;
 using Scalar.AspNetCore;
 using static Sample.App.Constants;
+using Sample.App.Dapr;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
 builder.Logging.AddConsole();
 
+
 builder.Services
+    .AddSingleton<SampleModule>()
+    .IntegrationPublisher(OutgoingTopicName, OutgoingPubSub)
+    .ConfigureHttpJsonOptions(opt => {
+        opt.SerializerOptions.TypeInfoResolver = new PolymorphicTypeResolver();
+    })
     .AddHttpLogging()
     .AddOpenApi()
-    .AddDaprClient();
+    .AddDaprClient(clientBuilder => clientBuilder
+            .UseJsonSerializationOptions(new(JsonSerializerDefaults.Web) { TypeInfoResolver = new PolymorphicTypeResolver() }));
 
 var app = builder.Build();
 
@@ -26,44 +32,20 @@ app.MapDefaultEndpoints();
 app.MapOpenApi();
 app.MapScalarApiReference(_ => _.Servers = []); // https://github.com/dotnet/aspnetcore/issues/57332
 
-
-
 app.MapGet("/", () => "Hello World!");
 
-app.MapGet("/sample/{id:guid}", async (Guid id, DaprClient dapr) =>
-{
+app
+    .MapGroup("/sample")
+    .MapSampleApi(StateStore);
 
-    var state = await dapr.GetStateAsync<SampleState>(StateStore, id.ToString());
-    return Results.Ok(state);
-}).WithOpenApi();
+app
+    .MapGroup("/test")
+    .MapTestApi(StateStore);
 
-app.MapPost("/sample", async (SampleCommand command, DaprClient dapr) =>
-{
-    var id = Guid.NewGuid();
+app.MapGroup("subscriptions")
+    .Inbox(InboxTopicName, InboxPubSub);
 
-    await ApplicationService.Execute<SampleState>(dapr,
-     StateStore,
-     id.ToString(),
-     new(Guid.Empty, "None"),
-     state => (state with { Text = command.Text }, [new SampleEvent(command.Text), new SampleEvent(command.Text)]));
-    //[new SampleEvent(command.Text)]), PubSub, TopicName);
-
-    return Results.Created($"/sample/{id}", id);
-
-}).WithOpenApi();
-
-
-app.MapPost("/subscriptions/sample", /*[Topic(PubSub, TopicName)] */(SampleEvent[] e, ILoggerFactory logger) =>
-{
-    var l = logger.CreateLogger(TopicName);
-    l.LogInformation("Got event");
-    var json = JsonSerializer.Serialize(e);
-    l.LogInformation(json);
-    return Results.Ok();
-})
-    .WithTopic(PubSub, TopicName)
-    .WithOpenApi();
-
-
+app.MapGroup("subscriptions")
+    .Outbox(OutgoingTopicName, OutgoingPubSub);
 
 app.Run();

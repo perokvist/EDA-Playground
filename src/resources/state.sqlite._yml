@@ -1,0 +1,17 @@
+apiVersion: dapr.io/v1alpha1
+kind: Component
+metadata:
+  name: stateStoreSqlite
+spec:
+  type: state.sqlite
+  version: v1
+  metadata: 
+  # - name: outboxPublishPubsub # Required
+  #   value: "pubSub"
+  # - name: outboxPublishTopic # Required
+  #   value: "sample"
+  - name: connectionString
+    value: "./../../.data/state.db" 
+  - name: disableWAL
+    value: "true"
+    # value: "file:../../.data/state.db"

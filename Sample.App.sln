@@ -12,11 +12,21 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "dapr", "dapr", "{A974B35D-96F9-4BA3-89AB-F60383696E59}"
 	ProjectSection(SolutionItems) = preProject
 		src\resources\pubsub.in-memory.yml = src\resources\pubsub.in-memory.yml
-		src\resources\state.cosmos._yml = src\resources\state.cosmos._yml
-		src\resources\state.in-memory.yml = src\resources\state.in-memory.yml
+		src\resources\state.cosmos.yml = src\resources\state.cosmos.yml
+		src\resources\state.sqlite._yml = src\resources\state.sqlite._yml
+		src\resources\state.in-memory._yml = src\resources\state.in-memory._yml
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sample.App.AppHost.Tests", "test\Sample.App.AppHost.Tests\Sample.App.AppHost.Tests.csproj", "{094D4E67-A181-4D86-8A1A-31242D443B79}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{5A8CC7CD-4585-4A9E-AA62-271EEABDA59E}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sample.Proxy", "src\Sample.Proxy\Sample.Proxy.csproj", "{3EDBE958-753F-475B-90E1-3FB9295117FF}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{8D6972DC-5BFC-44F3-A70E-225A08E082EC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -40,8 +50,18 @@ Global
 		{094D4E67-A181-4D86-8A1A-31242D443B79}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{094D4E67-A181-4D86-8A1A-31242D443B79}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{094D4E67-A181-4D86-8A1A-31242D443B79}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3EDBE958-753F-475B-90E1-3FB9295117FF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3EDBE958-753F-475B-90E1-3FB9295117FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3EDBE958-753F-475B-90E1-3FB9295117FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3EDBE958-753F-475B-90E1-3FB9295117FF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{094D4E67-A181-4D86-8A1A-31242D443B79} = {8D6972DC-5BFC-44F3-A70E-225A08E082EC}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D9014C3F-305D-44E2-B259-F68CFAC1DC40}
 	EndGlobalSection
 EndGlobal

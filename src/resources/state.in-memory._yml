@@ -9,4 +9,4 @@ spec:
   - name: outboxPublishPubsub # Required
     value: "pubSub"
   - name: outboxPublishTopic # Required
-    value: "sample"
+    value: "domain-events"

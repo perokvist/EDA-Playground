@@ -1,11 +1,9 @@
-﻿namespace Sample.App;
+﻿using Sample.App.Core;
 
+namespace Sample.App;
 
-public record Event(Guid EventId);
-
-public record SampleCommand(string Text);
-
-public record SampleState(Guid Id, string Text);
-
-public record SampleEvent(string Text) :Event(Guid.NewGuid());
+public record SampleCommand(Guid Id, string Text) : Command(Id);
+public record SampleState(Guid Id, string Text) : State(Id);
+public record SampleEvent(Guid Id, string Text) : DomainEvent(Id);
+public record SampleIntegrationEvent(string Text) : IntegrationEvent;
 
