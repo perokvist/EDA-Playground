@@ -1,4 +1,4 @@
-﻿namespace Sample.App;
+﻿namespace Sample.App.Infra;
 
 public static class Constants
 {

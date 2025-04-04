@@ -1,7 +1,8 @@
 ﻿using Dapr.Client;
 using Sample.App.Core;
 using Sample.App.Dapr;
-using IntegrationPublisher = System.Func<Sample.App.Core.IntegrationEvent[], System.Threading.Tasks.Task>;
+using Sample.App.Infra;
+using IntegrationPublisher = System.Func<Sample.App.Core.Event[], System.Threading.Tasks.Task>;
 
 namespace Sample.App;
 

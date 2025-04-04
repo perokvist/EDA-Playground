@@ -1,7 +1,7 @@
-﻿using System.Text.Json;
-using Sample.App.Core;
+﻿using Sample.App.Core;
 using Dapr.Client;
-using IntegrationPublisher = System.Func<Sample.App.Core.IntegrationEvent[], System.Threading.Tasks.Task>;
+using IntegrationPublisher = System.Func<Sample.App.Core.Event[], System.Threading.Tasks.Task>;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Sample.App.Dapr;
 public static class Subscriptions
@@ -24,15 +24,14 @@ public static class Subscriptions
         .WithOpenApi();
 
     private static RouteHandlerBuilder Subscription(RouteGroupBuilder builder, string name)
-     => builder.MapPost(name, async (DomainEvent[] events, SampleModule module, ILoggerFactory logger) =>
+     => builder.MapPost(name, async ([FromBody] Event[] events, SampleModule module, ILoggerFactory logger) =>
      {
          var l = logger.CreateLogger(name);
          l.LogInformation($"Subscription - {name} - recived : {events.GetType()}");
-         var json = JsonSerializer.Serialize(events);
-         l.LogInformation(json);
 
          foreach (var e in events)
          {
+             l.LogInformation("Handling {0}", e.GetType().Name);
              await module.When(e);
          }
 

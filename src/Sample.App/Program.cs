@@ -1,25 +1,37 @@
 using System.Text.Json;
 using Sample.App;
 using Scalar.AspNetCore;
-using static Sample.App.Constants;
+using static Sample.App.Infra.Constants;
 using Sample.App.Dapr;
+using Sample.App.Infra;
+using Microsoft.AspNetCore.Mvc;
+using System.Text.Json.Serialization.Metadata;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
 builder.Logging.AddConsole();
 
-
 builder.Services
     .AddSingleton<SampleModule>()
     .IntegrationPublisher(OutgoingTopicName, OutgoingPubSub)
-    .ConfigureHttpJsonOptions(opt => {
-        opt.SerializerOptions.TypeInfoResolver = new PolymorphicTypeResolver();
+    .ConfigureHttpJsonOptions(opt =>
+    {
+        opt.SerializerOptions.TypeInfoResolverChain.Clear();
+        opt.SerializerOptions.TypeInfoResolverChain.Add(new PolymorphicEventTypeResolver());
+        opt.SerializerOptions.TypeInfoResolverChain.Add(new DefaultJsonTypeInfoResolver());
+
     })
     .AddHttpLogging()
     .AddOpenApi()
     .AddDaprClient(clientBuilder => clientBuilder
-            .UseJsonSerializationOptions(new(JsonSerializerDefaults.Web) { TypeInfoResolver = new PolymorphicTypeResolver() }));
+            .UseJsonSerializationOptions(new(JsonSerializerDefaults.Web)
+            {
+                TypeInfoResolverChain = {
+                    new PolymorphicEventTypeResolver(),
+                    new PolymorphicStateTypeResolver()
+                }
+            }));
 
 var app = builder.Build();
 
@@ -27,8 +39,9 @@ app
     .UseHttpLogging()
     .UseCloudEvents();
 
-app.MapSubscribeHandler();
 app.MapDefaultEndpoints();
+app.MapSubscribeHandler();
+
 app.MapOpenApi();
 app.MapScalarApiReference(_ => _.Servers = []); // https://github.com/dotnet/aspnetcore/issues/57332
 
