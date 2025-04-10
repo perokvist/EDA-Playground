@@ -9,7 +9,7 @@ namespace Sample.App;
 public class SampleModule(DaprClient dapr, IntegrationPublisher pub)
 {
     public Task Dispatch(Command command)
-        => ApplicationService.Execute(dapr, Constants.StateStore, command, command switch
+        => ApplicationService.ExecuteTestDouble(dapr, Constants.StateStore, Constants.StateEventStore, command, command switch
         {
             SampleCommand cmd => new SampleDecider(),
             _ => throw new ArgumentException(nameof(command)),

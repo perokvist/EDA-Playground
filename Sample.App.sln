@@ -12,15 +12,17 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "dapr", "dapr", "{A974B35D-96F9-4BA3-89AB-F60383696E59}"
 	ProjectSection(SolutionItems) = preProject
 		src\resources\pubsub.in-memory.yml = src\resources\pubsub.in-memory.yml
-		src\resources\state.cosmos.yml = src\resources\state.cosmos.yml
+		src\resources\state.eventstore.cosmos.yml = src\resources\state.eventstore.cosmos.yml
 		src\resources\state.sqlite._yml = src\resources\state.sqlite._yml
 		src\resources\state.in-memory._yml = src\resources\state.in-memory._yml
+		src\resources\state.cosmos.yml = src\resources\state.cosmos.yml
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sample.App.AppHost.Tests", "test\Sample.App.AppHost.Tests\Sample.App.AppHost.Tests.csproj", "{094D4E67-A181-4D86-8A1A-31242D443B79}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{5A8CC7CD-4585-4A9E-AA62-271EEABDA59E}"
 	ProjectSection(SolutionItems) = preProject
+		NuGet.Config = NuGet.Config
 		README.md = README.md
 	EndProjectSection
 EndProject

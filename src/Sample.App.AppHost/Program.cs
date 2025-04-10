@@ -12,8 +12,10 @@ var cosmos = builder
     .WithGatewayPort(8081) //TODO how to set this port in emulator (json)
     .WithDataExplorer()
 );
-var db = cosmos.AddCosmosDatabase("db");
-db.AddContainer("col", "/id");
+var db = cosmos.AddCosmosDatabase("sampleDB");
+db.AddContainer("eventstore", "/id");
+db.AddContainer("state", "/id");
+
 #pragma warning restore ASPIRECOSMOSDB001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
 
 //var sqlite = builder
@@ -21,8 +23,18 @@ db.AddContainer("col", "/id");
 //    .WithSqliteWeb();
 
 var stateStore = builder
-    .AddDaprStateStore("stateStore", new DaprComponentOptions { LocalPath = Path.Combine("..", "resources/state.cosmos.yml") })
+    .AddDaprStateStore("stateStore", new DaprComponentOptions { 
+        LocalPath = Path.Combine("..", "resources/state.cosmos.yml") 
+    })
     .WaitFor(cosmos);
+
+var stateEventStore = builder
+    .AddDaprStateStore("stateEventStore", new DaprComponentOptions
+    {
+        LocalPath = Path.Combine("..", "resources/state.eventstore.cosmos.yml")
+    })
+    .WaitFor(cosmos);
+
 
 var pubSub = builder
     .AddDaprPubSub("pubSub", new DaprComponentOptions { LocalPath = Path.Combine("..", "resources/pubsub.in-memory.yml") });
@@ -34,9 +46,10 @@ var daprOptions = new DaprSidecarOptions();
 
 var apiservice = builder
             .AddProject<Projects.Sample_App>("sample")
-            .WithDaprSidecar(options: daprOptions with { AppId = "sample" })
+            .WithDaprSidecar(options: daprOptions with { AppId = "sample", LogLevel = "debug" })
             .WithReference(pubSub)
             .WithReference(stateStore)
+            .WithReference(stateEventStore)
             .WaitFor(cosmos);
 
 builder.AddProject<Projects.Sample_Proxy>("sample-proxy");

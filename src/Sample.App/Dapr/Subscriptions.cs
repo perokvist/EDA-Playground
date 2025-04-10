@@ -2,6 +2,8 @@
 using Dapr.Client;
 using IntegrationPublisher = System.Func<Sample.App.Core.Event[], System.Threading.Tasks.Task>;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.Json;
+using static Microsoft.IO.RecyclableMemoryStreamManager;
 
 namespace Sample.App.Dapr;
 public static class Subscriptions
@@ -9,8 +11,13 @@ public static class Subscriptions
     public static IServiceCollection IntegrationPublisher(this IServiceCollection services, string topicName, string pubSubName)
         => services.AddSingleton<IntegrationPublisher>(sp => async events =>
         {
+            var meta = new Dictionary<string, string>
+            {
+                { "contentType", "application/json" }
+            };
+
             var dapr = sp.GetRequiredService<DaprClient>();
-            await dapr.BulkPublishEventAsync(pubSubName, topicName, events);
+            await dapr.PublishEventAsync(pubSubName, topicName, events, metadata: meta);
         });
 
     public static RouteHandlerBuilder Inbox(this RouteGroupBuilder builder, string name, string pubSubName)
@@ -24,7 +31,7 @@ public static class Subscriptions
         .WithOpenApi();
 
     private static RouteHandlerBuilder Subscription(RouteGroupBuilder builder, string name)
-     => builder.MapPost(name, async ([FromBody] Event[] events, SampleModule module, ILoggerFactory logger) =>
+     => builder.MapPost(name, async (Event[] events, SampleModule module, ILoggerFactory logger) =>
      {
          var l = logger.CreateLogger(name);
          l.LogInformation($"Subscription - {name} - recived : {events.GetType()}");

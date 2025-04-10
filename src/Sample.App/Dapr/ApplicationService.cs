@@ -22,7 +22,17 @@ public static class ApplicationService
 
         await dapr.SaveStateAsync(stateStoreName, stateKey, newState, metadata: meta);
         await dapr.PublishEventAsync(pubsubName, topicName, events, meta);
-        //await dapr.BulkPublishEventAsync(pubsubName, topicName, events);
+    }
+
+    public static async Task ExecuteTestDouble(
+       this DaprClient dapr,
+       string stateStoreName,
+       string stateEventStoreName,
+       Command command,
+       Decider decider)
+    {
+        await dapr.Execute(stateStoreName, command, decider);
+        await dapr.Execute<SampleState>(stateEventStoreName, command, decider);
     }
 
     public static Task Execute(
@@ -37,44 +47,55 @@ public static class ApplicationService
                 return (newState, events);
             });
 
-    public static async Task Execute<TState>(this DaprClient dapr, string stateStoreName, string stateKey, TState defaultState, Func<TState, (TState, Event[])> f)
+
+    public static async Task Execute<TState>(
+        this DaprClient dapr, 
+        string stateStoreName, 
+        string stateKey, 
+        TState defaultState, 
+        Func<TState, (TState, Event[])> f)
     {
-        var options = dapr.JsonSerializerOptions;
-
-        var meta = new Dictionary<string, string>
-            {
-                { "contentType", "application/json" }
-            };
-
         var state = await dapr.GetStateAsync<TState>(stateStoreName, stateKey);
 
         var currentState = state ?? defaultState;
         var (newState, events) = f(currentState);
 
-        var stateOperation = new StateTransactionRequest(
-            key: stateKey,
-            value: JsonSerializer.SerializeToUtf8Bytes(newState, options: options),
-            operationType: StateOperationType.Upsert,
-            metadata: meta);
+        await dapr.ExecuteWithOutboxProjection(stateStoreName, stateKey, newState, events);
+    }
 
-        var json = JsonSerializer.Serialize(events, options: options);
+    /// <summary>
+    /// Uses a Dapr EventStore
+    /// </summary>
+    public static async Task Execute<TState>(this DaprClient dapr,
+        string eventStateStoreName,
+        Command command,
+        Decider decider)
+    {
+        var eventStore = new DaprEventStore(dapr)
+        {
+            StoreName = eventStateStoreName,
+            MetaProvider = name =>
+                new Dictionary<string, string>
+                {
+                    { "contentType", "application/json" }
+                }
+        };
 
-        var eventsOperation = new StateTransactionRequest(
-            key: stateKey,
-            value: JsonSerializer.SerializeToUtf8Bytes(events, options: options),
-            operationType: StateOperationType.Upsert,
-            metadata: new Dictionary<string, string>
-            {
-                { "outbox.projection", "true" },
-                { "contentType", "application/json" },
-                { "datacontenttype", "application/json" }
-            }
-        );
+        var streamName = $"{typeof(TState).Name}-{command.Id}";
 
-        // Create the list of state operations
-        var ops = new List<StateTransactionRequest> { stateOperation, eventsOperation };
+        var rawHistory = eventStore.LoadEventStreamAsync(streamName, 0);
+        var meta = await eventStore.GetStreamMetaData(streamName); //TODO fix
+        var version = meta?.Version ?? 0;
+        var history = rawHistory.Select(x => x.EventAs<Event>());
 
-        // Execute the state transaction
-        await dapr.ExecuteStateTransactionAsync(stateStoreName, ops, metadata: meta);
+        var currentState = await history.AggregateAsync(decider.InitialState, decider.Evolve);
+
+        var events = decider.Decide(command, currentState);
+
+        var eventData = events
+                .Select((x, i) => EventData.Create(eventName: x.GetType().Name, data: x))
+                .ToArray();
+
+        await eventStore.AppendToStreamAsync(streamName, version, eventData);
     }
 }

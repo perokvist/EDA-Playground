@@ -1,7 +1,7 @@
 apiVersion: dapr.io/v1alpha1
 kind: Component
 metadata:
-  name: stateStore
+  name: stateEventStore
 spec:
   type: state.azure.cosmosdb
   version: v1
@@ -13,10 +13,6 @@ spec:
   - name: database
     value: sampleDB
   - name: collection
-    value: state
+    value: eventstore
   - name: contenttype
     value: application/json
-  - name: outboxPublishPubsub # Required
-    value: pubSub
-  - name: outboxPublishTopic # Required
-    value: domain-events

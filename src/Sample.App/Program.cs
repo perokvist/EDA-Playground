@@ -4,7 +4,6 @@ using Scalar.AspNetCore;
 using static Sample.App.Infra.Constants;
 using Sample.App.Dapr;
 using Sample.App.Infra;
-using Microsoft.AspNetCore.Mvc;
 using System.Text.Json.Serialization.Metadata;
 
 var builder = WebApplication.CreateBuilder(args);
