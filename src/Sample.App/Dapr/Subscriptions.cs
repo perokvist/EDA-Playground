@@ -1,9 +1,6 @@
 ﻿using Sample.App.Core;
 using Dapr.Client;
 using IntegrationPublisher = System.Func<Sample.App.Core.Event[], System.Threading.Tasks.Task>;
-using Microsoft.AspNetCore.Mvc;
-using System.Text.Json;
-using static Microsoft.IO.RecyclableMemoryStreamManager;
 
 namespace Sample.App.Dapr;
 public static class Subscriptions

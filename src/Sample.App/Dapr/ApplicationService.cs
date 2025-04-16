@@ -60,7 +60,7 @@ public static class ApplicationService
         var currentState = state ?? defaultState;
         var (newState, events) = f(currentState);
 
-        await dapr.ExecuteWithOutboxProjection(stateStoreName, stateKey, newState, events);
+        await dapr.SaveWithOutboxProjection(stateStoreName, stateKey, newState, events);
     }
 
     /// <summary>

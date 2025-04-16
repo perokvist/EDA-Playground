@@ -1,9 +1,7 @@
 ﻿using Dapr.Client;
-using Sample.App.Core;
 using System.Buffers;
 using System.Data;
 using System.Text.Json;
-using static Microsoft.IO.RecyclableMemoryStreamManager;
 using static Sample.App.Dapr.DaprEventStore;
 
 namespace Sample.App.Dapr;

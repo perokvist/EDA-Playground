@@ -5,7 +5,7 @@ namespace Sample.App.Dapr;
 
 public static class Outbox
 {
-    public static async Task ExecuteWithOutboxProjection<TState, TEvent>(
+    public static async Task SaveWithOutboxProjection<TState, TEvent>(
         this DaprClient dapr,
         string stateStoreName,
         string stateKey,
