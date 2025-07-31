@@ -26,8 +26,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sample.Proxy", "src\Sample.Proxy\Sample.Proxy.csproj", "{3EDBE958-753F-475B-90E1-3FB9295117FF}"
-EndProject
+
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{8D6972DC-5BFC-44F3-A70E-225A08E082EC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sample.App.Tests", "test\Sample.App.Tests\Sample.App.Tests.csproj", "{CE3884DD-0B30-4B64-8501-10264AADA321}"
@@ -54,10 +53,7 @@ Global
 		{094D4E67-A181-4D86-8A1A-31242D443B79}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{094D4E67-A181-4D86-8A1A-31242D443B79}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{094D4E67-A181-4D86-8A1A-31242D443B79}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3EDBE958-753F-475B-90E1-3FB9295117FF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3EDBE958-753F-475B-90E1-3FB9295117FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3EDBE958-753F-475B-90E1-3FB9295117FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3EDBE958-753F-475B-90E1-3FB9295117FF}.Release|Any CPU.Build.0 = Release|Any CPU
+
 		{CE3884DD-0B30-4B64-8501-10264AADA321}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{CE3884DD-0B30-4B64-8501-10264AADA321}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CE3884DD-0B30-4B64-8501-10264AADA321}.Release|Any CPU.ActiveCfg = Release|Any CPU

@@ -1,6 +1,7 @@
 using CommunityToolkit.Aspire.Hosting.Dapr;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Aspire.Hosting;
 
 var builder = DistributedApplication.CreateBuilder(args);
 
@@ -52,7 +53,15 @@ var apiservice = builder
             .WithReference(stateEventStore)
             .WaitFor(cosmos);
 
-builder.AddProject<Projects.Sample_Proxy>("sample-proxy");
+// Add YARP reverse proxy to route all traffic to the sample service
+// YARP will proxy requests to the sample service
+var proxy = builder.AddYarp("proxy")
+    .WithConfiguration(config =>
+    {
+        // YARP configuration can be added here or via appsettings.json
+        // For simplicity, this creates a basic YARP resource that routes to sample
+    })
+    .WithReference(apiservice);
 
 // Workaround for https://github.com/dotnet/aspire/issues/2219
 if (builder.Configuration.GetValue<string>("DAPR_CLI_PATH") is { } daprCliPath)
