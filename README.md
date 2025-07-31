@@ -12,13 +12,39 @@ This repository includes comprehensive GitHub Copilot templates to help you work
 
 The following templates are available in `.github/copilot-templates/`:
 
+#### Core EDA Patterns
+
 - **`event-publisher.md`** - Creating event publishers with Dapr PubSub
+  - *Use when*: You need to publish domain events, integration events, or notifications to other services
+  - *Contains*: Event definition, type resolver setup, publisher service patterns, and topic configuration
+
 - **`event-consumer.md`** - Building event consumers/handlers using the inbox pattern  
+  - *Use when*: You need to handle incoming events from other services or implement event-driven workflows
+  - *Contains*: Handler creation, subscription mapping, inbox pattern integration, and error handling strategies
+
 - **`state-management.md`** - Working with Dapr state stores across different backends
+  - *Use when*: You need to persist application state, implement event sourcing, or manage distributed data
+  - *Contains*: State model definition, repository patterns, conditional updates, and multi-backend configuration
+
+#### Service Architecture
+
 - **`service-registration.md`** - Adding new services to the Aspire AppHost
+  - *Use when*: You're creating new microservices or adding components to the distributed application
+  - *Contains*: Project setup, dependency configuration, Aspire registration, and inter-service communication
+
 - **`testing-eda.md`** - Comprehensive testing strategies for EDA components
+  - *Use when*: You need to test event handlers, validate event flows, or ensure system reliability
+  - *Contains*: Unit test patterns, integration test setup, contract testing, and Aspire test configurations
+
+#### Infrastructure & Setup
+
 - **`dapr-configuration.md`** - Configuring Dapr components for different environments
+  - *Use when*: You need to set up state stores, pub/sub systems, or switch between development/production backends
+  - *Contains*: Component YAML configurations, backend options (in-memory, SQLite, Redis), and AppHost registration
+
 - **`development-setup.md`** - Complete development environment setup guide
+  - *Use when*: You're setting up a new development environment or onboarding team members
+  - *Contains*: Prerequisites installation, project setup, Dapr initialization, and development workflow
 
 ### How to Use the Templates
 
