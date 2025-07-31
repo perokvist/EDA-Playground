@@ -1,0 +1,116 @@
+{
+  "$schema": "https://raw.githubusercontent.com/modelcontextprotocol/schema/main/schema/mcp-config.schema.json",
+  "description": "MCP configuration for EDA-Playground development environment",
+  "version": "1.0.0",
+  "mcpServers": {
+    "playwright": {
+      "command": "npx",
+      "args": [
+        "@modelcontextprotocol/server-playwright"
+      ],
+      "env": {
+        "PLAYWRIGHT_HEADLESS": "true",
+        "PLAYWRIGHT_TIMEOUT": "30000"
+      },
+      "description": "Playwright MCP server for browser automation and testing",
+      "capabilities": [
+        "browser_automation",
+        "web_scraping",
+        "ui_testing",
+        "screenshot_capture"
+      ]
+    },
+    "filesystem": {
+      "command": "npx",
+      "args": [
+        "@modelcontextprotocol/server-filesystem",
+        "/home/runner/work/EDA-Playground/EDA-Playground"
+      ],
+      "description": "Filesystem access for the EDA-Playground repository",
+      "capabilities": [
+        "file_read",
+        "file_write",
+        "directory_list"
+      ]
+    },
+    "git": {
+      "command": "npx",
+      "args": [
+        "@modelcontextprotocol/server-git",
+        "--repository",
+        "/home/runner/work/EDA-Playground/EDA-Playground"
+      ],
+      "description": "Git operations for the EDA-Playground repository",
+      "capabilities": [
+        "git_status",
+        "git_diff",
+        "git_log",
+        "git_blame"
+      ]
+    }
+  },
+  "tools": {
+    "playwright_browser": {
+      "server": "playwright",
+      "description": "Launch and control web browsers for testing EDA-Playground web interfaces",
+      "examples": [
+        {
+          "description": "Take a screenshot of the Aspire dashboard",
+          "usage": "Use playwright to navigate to http://localhost:15888 and take a screenshot"
+        },
+        {
+          "description": "Test event publishing UI",
+          "usage": "Use playwright to interact with the event publishing interface and verify events are published"
+        }
+      ]
+    },
+    "playwright_network": {
+      "server": "playwright",
+      "description": "Monitor network requests and responses during testing",
+      "examples": [
+        {
+          "description": "Monitor Dapr sidecar communication",
+          "usage": "Use playwright to capture network traffic to verify Dapr pub/sub operations"
+        }
+      ]
+    }
+  },
+  "contexts": {
+    "eda_playground": {
+      "description": "Context for working with EDA-Playground architecture",
+      "includes": [
+        "src/**/*.cs",
+        "test/**/*.cs",
+        "resources/**/*.yaml",
+        ".github/copilot-templates/**/*.md"
+      ],
+      "tools": [
+        "playwright_browser",
+        "playwright_network",
+        "filesystem",
+        "git"
+      ]
+    }
+  },
+  "examples": {
+    "e2e_testing": {
+      "description": "End-to-end testing of event-driven scenarios using Playwright",
+      "steps": [
+        "Use filesystem to read test scenarios from test directory",
+        "Use playwright to launch browsers and navigate to application",
+        "Use playwright to trigger events through UI",
+        "Use playwright to verify event processing results",
+        "Use git to check for any generated test artifacts"
+      ]
+    },
+    "ui_monitoring": {
+      "description": "Monitor Aspire dashboard and application health",
+      "steps": [
+        "Use playwright to navigate to Aspire dashboard",
+        "Use playwright to capture screenshots of service status",
+        "Use playwright to monitor logs and metrics",
+        "Use filesystem to save monitoring results"
+      ]
+    }
+  }
+}

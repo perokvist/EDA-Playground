@@ -45,3 +45,33 @@ The following templates are available in `.github/copilot-templates/`:
 - **Step-by-step instructions** for all major EDA scenarios
 
 For detailed project information and development guidelines, see [`.github/copilot-instructions.md`](.github/copilot-instructions.md).
+
+## MCP Configuration
+
+This repository includes a Model Context Protocol (MCP) configuration that enables AI assistants to interact with development tools and automate testing workflows.
+
+### Available MCP Servers
+
+The configuration in `.github/mcp-config.json` provides:
+
+- **Playwright Server** - Browser automation for testing web interfaces and monitoring Aspire dashboards
+- **Filesystem Server** - Access to project files and repository structure  
+- **Git Server** - Repository operations for code analysis and change tracking
+
+### Quick Start with MCP
+
+1. Install MCP servers:
+   ```bash
+   npm install -g @modelcontextprotocol/server-playwright
+   npm install -g @modelcontextprotocol/server-filesystem  
+   npm install -g @modelcontextprotocol/server-git
+   ```
+
+2. Configure your MCP-compatible AI assistant to use `.github/mcp-config.json`
+
+3. Use with AI assistants for automated testing:
+   ```
+   Use MCP with Playwright to test the event publishing workflow in the EDA-Playground
+   ```
+
+For detailed setup and usage instructions, see [`.github/MCP-README.md`](.github/MCP-README.md).
