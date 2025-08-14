@@ -1,5 +1,6 @@
 ﻿using System.Text.Json;
 using Dapr.Client;
+using Sample.App.Modules.Sample;
 
 namespace Sample.App;
 

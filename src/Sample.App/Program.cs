@@ -5,6 +5,7 @@ using static Sample.App.Infra.Constants;
 using Sample.App.Dapr;
 using Sample.App.Infra;
 using System.Text.Json.Serialization.Metadata;
+using Sample.App.Modules.Sample;
 
 var builder = WebApplication.CreateBuilder(args);
 

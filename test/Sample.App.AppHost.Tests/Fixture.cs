@@ -1,10 +1,10 @@
+﻿using Dapr.Client;
 
-namespace Sample.App.AppHost.Tests.Tests;
+namespace Sample.App.AppHost.Tests;
 
-public class IntegrationTest
+public class Fixture
 {
-    [Fact]
-    public async Task GetWebResourceRootReturnsOkStatusCode()
+    public async Task Test(string webResourceName, Func<HttpClient, Task> f)
     {
         // Arrange
         var appHost = await DistributedApplicationTestingBuilder.CreateAsync<Projects.Sample_App_AppHost>();
@@ -12,21 +12,22 @@ public class IntegrationTest
         {
             clientBuilder.AddStandardResilienceHandler();
         });
-
         // To output logs to the xUnit.net ITestOutputHelper, consider adding a package from https://www.nuget.org/packages?q=xunit+logging
 
         await using var app = await appHost.BuildAsync();
         var resourceNotificationService = app.Services.GetRequiredService<ResourceNotificationService>();
         await app.StartAsync();
 
-        //var daprClient = app.Services.GetRequiredService<DaprClient>();
         // Act
-        var httpClient = app.CreateHttpClient("sample");
+        var daprHttpClient = app.CreateHttpClient($"{webResourceName}-dapr-cli");
 
-        await resourceNotificationService.WaitForResourceAsync("sample", KnownResourceStates.Running).WaitAsync(TimeSpan.FromSeconds(30));
-        var response = await httpClient.GetAsync("/");
+        var db = new DaprClientBuilder().UseHttpEndpoint(daprHttpClient.BaseAddress!.ToString());
+        var dapr = db.Build();
+
+        var httpClient = app.CreateHttpClient(webResourceName);
+        await resourceNotificationService.WaitForResourceAsync(webResourceName, KnownResourceStates.Running).WaitAsync(TimeSpan.FromSeconds(30));
 
         // Assert
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        await f(httpClient);
     }
 }

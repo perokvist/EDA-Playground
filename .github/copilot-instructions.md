@@ -18,8 +18,7 @@ src/
 ├── Sample.App/              # Main application with event handlers and endpoints
 ├── Sample.App.AppHost/      # Aspire application host for orchestration
 ├── Sample.App.ServiceDefaults/ # Shared service configuration
-├── Sample.Proxy/            # Proxy service for routing and aggregation
-└── resources/               # Dapr configuration files (pubsub, state stores)
+─ resources/               # Dapr configuration files (pubsub, state stores)
 
 test/
 ├── Sample.App.Tests/        # Unit tests for main application
@@ -33,8 +32,7 @@ This playground supports the following EDA patterns:
 1. **Event Publishing & Consuming** - Publish events and handle them asynchronously
 2. **State Management** - Persist and retrieve application state using various backends
 3. **Service Orchestration** - Manage multiple services with Aspire AppHost
-4. **Proxy Patterns** - Route and aggregate requests across services
-5. **Testing EDA Components** - Test event-driven workflows and state management
+4. **Testing EDA Components** - Test event-driven workflows and state management
 
 ## Development Guidelines
 
@@ -60,14 +58,41 @@ dotnet test
 dapr run --app-id sample-app --app-port 5000 -- dotnet run --project src/Sample.App
 ```
 
+## Coding style
+
+- Don't use regions in code files.
+- Prefer using pattern matching over if statements.
+- Prefer using "=>" over "return" statements." when functions are simple.
+- View Records should use View suffix
+- Query Records should use Query suffix
+
 ## Template Files
 
 Use the templates in `.github/copilot-templates/` for common scenarios:
 
-- `event-publisher.md` - Creating event publishers
-- `event-consumer.md` - Creating event consumers/handlers
 - `state-management.md` - Working with state stores
 - `service-registration.md` - Adding services to AppHost
-- `testing-eda.md` - Testing event-driven components
 - `dapr-configuration.md` - Configuring Dapr components
 - `development-setup.md` - Setting up the development environment
+
+## Architecture
+
+The architecture of the EDA-Playground is based on three main slices: Command, View, and Automation. From Event Modelling.
+
+### Command Slice
+
+Pattern: Trigger → Command → Event(s)
+Purpose: Represents a user or system action that changes the state of the system.
+Example: A user clicks "Submit Order", which triggers a command and results in an OrderPlaced event.
+
+### View Slice
+
+Pattern: Event(s) → View
+Purpose: Represents a query or read model that interprets and displays data based on past events.
+Example: A dashboard showing all orders placed today, built from OrderPlaced events.
+
+### Automation Slice
+
+Pattern: Event(s) → View → Automated Trigger → Command → Event(s)
+Purpose: Represents automated system behavior based on data conditions.
+Example: When inventory drops below a threshold, an automated process triggers a RestockInventory command.

@@ -30,49 +30,9 @@ public static class Extensions
                 };
         return daprEventStore;
     }
-
-    public static async Task<(IEnumerable<EventData> Events, long Version)> LoadSlicesAsync(
-        this DaprClient client, string storeName, ILogger logger,
-        string streamName, long version, Dictionary<string, string> meta, StreamHead head)
-    {
-        var eventSlices = new List<EventData[]>();
-        using (logger.BeginScope("Loading head {streamName}. Starting version {version}", streamName, head.Version))
-        {
-            var next = head.Version;
-
-            while (next != 0 && next >= version)
-            {
-                var sliceKey = Naming.StreamKey(streamName, next);
-                var slice = await client.GetStateAsync<EventData[]>(storeName, sliceKey, metadata: meta);
-
-                logger.LogDebug("Slice {sliceKey} loaded range : {firstVersion} - {lastVersion}", sliceKey, slice.First().Version, slice.Last().Version);
-                next = slice.First().Version - 1;
-
-                if (next < version)
-                {
-                    logger.LogDebug("Version within slice. Next : {next}. Version : {version}", next, version);
-                    eventSlices.Add(slice.Where(e => e.Version >= version).ToArray());
-                    break;
-                }
-
-                logger.LogDebug("Adding slice. Next : {next}. Version : {version}", next, version);
-
-                eventSlices.Add(slice);
-            }
-
-            logger.LogDebug("Done reading. Got {sliceCount} slices.", eventSlices.Count);
-
-            var events = eventSlices
-                .Reverse<EventData[]>()
-                .SelectMany(e => e)
-                .ToArray();
-
-            return (events, events.LastOrDefault()?.Version ?? head.Version);
-        }
-    }
-        public static async IAsyncEnumerable<EventData> LoadAsyncBulkEventsAsync(
-        this DaprClient client, string storeName,
-        string streamName, long version, Dictionary<string, string> meta, StreamHead head, int chunkSize = 20)
+    public static async IAsyncEnumerable<EventData> LoadAsyncBulkEventsAsync(
+     this DaprClient client, string storeName,
+     string streamName, long version, Dictionary<string, string> meta, StreamHead head, int chunkSize = 20)
     {
         var keys = Enumerable
             .Range(version == default ? 1 : (int)version, (int)(head.Version) + (version == default ? default : 1))
@@ -80,12 +40,12 @@ public static class Extensions
             .Select(x => Naming.StreamKey(streamName, x))
             .ToList();
 
-        if (!keys.Any())
+        if (keys.Count == 0)
             yield break;
 
-        foreach (var chunk in keys.BuildChunks(chunkSize))
+        foreach (var chunk in keys.Chunk(chunkSize))
         {
-            var events = (await client.GetBulkStateAsync(storeName, chunk.ToArray(), null, metadata: meta))
+            var events = (await client.GetBulkStateAsync(storeName, chunk, null, metadata: meta))
                 .Select(x => JsonSerializer.Deserialize<EventData>(x.Value))
                 .OrderBy(x => x.Version);
 
@@ -94,22 +54,12 @@ public static class Extensions
         }
     }
 
-    static IEnumerable<IEnumerable<T>> BuildChunks<T>(this IEnumerable<T> list, int batchSize)
-    {
-        int total = 0;
-        while (total < list.Count())
-        {
-            yield return list.Skip(total).Take(batchSize);
-            total += batchSize;
-        }
-    }
-
     public static async Task StateTransactionAsync(this DaprClient client,
         string storeName,
         string streamName, string streamHeadKey, StreamHead head, string headetag, Dictionary<string, string> meta, EventData[] versionedEvents)
     {
         var eventsReq = versionedEvents.Select(x => new StateTransactionRequest(
-                Naming.StreamKey(streamName, x.Version), 
+                Naming.StreamKey(streamName, x.Version),
                 JsonSerializer.SerializeToUtf8Bytes(x, client.JsonSerializerOptions), StateOperationType.Upsert, metadata: meta));
         var headReq = new StateTransactionRequest(streamHeadKey, JsonSerializer.SerializeToUtf8Bytes(head), StateOperationType.Upsert,
             metadata: meta,

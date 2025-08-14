@@ -1,6 +1,6 @@
 ﻿using Sample.App.Core;
 
-namespace Sample.App;
+namespace Sample.App.Modules.Sample;
 
 public record SampleDecider() : Decider(
             InitialState: new SampleState(Guid.Empty, "None"),

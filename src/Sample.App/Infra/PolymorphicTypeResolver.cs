@@ -2,6 +2,7 @@
 using System.Text.Json.Serialization;
 using System.Text.Json;
 using Sample.App.Core;
+using Sample.App.Modules.Sample;
 
 namespace Sample.App.Infra;
 

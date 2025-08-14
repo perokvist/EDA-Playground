@@ -1,6 +1,7 @@
 ﻿using System.Text.Json;
 using Dapr.Client;
 using Sample.App.Core;
+using Sample.App.Modules.Sample;
 
 namespace Sample.App.Dapr;
 public static class ApplicationService
@@ -49,10 +50,10 @@ public static class ApplicationService
 
 
     public static async Task Execute<TState>(
-        this DaprClient dapr, 
-        string stateStoreName, 
-        string stateKey, 
-        TState defaultState, 
+        this DaprClient dapr,
+        string stateStoreName,
+        string stateKey,
+        TState defaultState,
         Func<TState, (TState, Event[])> f)
     {
         var state = await dapr.GetStateAsync<TState>(stateStoreName, stateKey);
@@ -74,12 +75,12 @@ public static class ApplicationService
         var eventStore = new DaprEventStore(dapr)
         {
             StoreName = eventStateStoreName,
-            MetaProvider = name =>
-                new Dictionary<string, string>
-                {
-                    { "contentType", "application/json" }
-                }
-        };
+            //MetaProvider = name =>
+            //    new Dictionary<string, string>
+            //    {
+            //        { "contentType", "application/json" }
+            //    }
+        }.PartitionPerStream();
 
         var streamName = $"{typeof(TState).Name}-{command.Id}";
 

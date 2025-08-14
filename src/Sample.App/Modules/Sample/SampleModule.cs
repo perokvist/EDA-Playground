@@ -4,12 +4,12 @@ using Sample.App.Dapr;
 using Sample.App.Infra;
 using IntegrationPublisher = System.Func<Sample.App.Core.Event[], System.Threading.Tasks.Task>;
 
-namespace Sample.App;
+namespace Sample.App.Modules.Sample;
 
 public class SampleModule(DaprClient dapr, IntegrationPublisher pub)
 {
     public Task Dispatch(Command command)
-        => ApplicationService.ExecuteTestDouble(dapr, Constants.StateStore, Constants.StateEventStore, command, command switch
+        => dapr.ExecuteTestDouble(Constants.StateStore, Constants.StateEventStore, command, command switch
         {
             SampleCommand cmd => new SampleDecider(),
             _ => throw new ArgumentException(nameof(command)),
