@@ -27,6 +27,7 @@ public static class Outbox
 
         var json = JsonSerializer.Serialize(events, options: options);
 
+        // TODO refactor events -> outbox (use by es and state)
         var eventsOperation = new StateTransactionRequest(
         key: stateKey,
             value: JsonSerializer.SerializeToUtf8Bytes(events, options: options),

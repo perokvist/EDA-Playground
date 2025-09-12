@@ -31,8 +31,13 @@ public static class Extensions
         return daprEventStore;
     }
     public static async IAsyncEnumerable<EventData> LoadAsyncBulkEventsAsync(
-     this DaprClient client, string storeName,
-     string streamName, long version, Dictionary<string, string> meta, StreamHead head, int chunkSize = 20)
+     this DaprClient client,
+     string storeName,
+     string streamName,
+     long version,
+     Dictionary<string, string> meta,
+     StreamHead head,
+     int chunkSize = 20)
     {
         var keys = Enumerable
             .Range(version == default ? 1 : (int)version, (int)(head.Version) + (version == default ? default : 1))
@@ -54,36 +59,71 @@ public static class Extensions
         }
     }
 
-    public static async Task StateTransactionAsync(this DaprClient client,
+    public static Task EventsTransactionAsync(
+        this DaprClient client,
         string storeName,
-        string streamName, string streamHeadKey, StreamHead head, string headetag, Dictionary<string, string> meta, EventData[] versionedEvents)
-    {
-        var eventsReq = versionedEvents.Select(x => new StateTransactionRequest(
-                Naming.StreamKey(streamName, x.Version),
-                JsonSerializer.SerializeToUtf8Bytes(x, client.JsonSerializerOptions), StateOperationType.Upsert, metadata: meta));
-        var headReq = new StateTransactionRequest(streamHeadKey, JsonSerializer.SerializeToUtf8Bytes(head), StateOperationType.Upsert,
+        string streamName,
+        string streamHeadKey,
+        StreamHead streamHead,
+        string headetag,
+        Dictionary<string, string> meta,
+        EventData[] events)
+        => client.ExecuteStateTransactionAsync(
+            storeName: storeName,
+            operations: [streamHead.CreateStreamHeadStateRequest(streamHeadKey, headetag, meta),
+                .. events.CreateEventStateRequests(streamName, meta, client.JsonSerializerOptions),
+                events.OutboxRequest(streamHeadKey, client.JsonSerializerOptions)],
+            metadata: meta);
+
+    public static StateTransactionRequest[] OutboxRequests(
+        this EventData[] versionedEvents,
+        string streamName,
+        JsonSerializerOptions serializerOptions)
+        => [.. versionedEvents.Select(x => new StateTransactionRequest(
+               key: Naming.StreamKey(streamName, x.Version),
+               value: JsonSerializer.SerializeToUtf8Bytes(x, serializerOptions),
+               operationType: StateOperationType.Upsert,
+               metadata: new Dictionary<string, string>
+               {
+                { "outbox.projection", "true" },
+                { "contentType", "application/json" },
+                { "datacontenttype", "application/json" }
+               }
+           ))];
+
+    public static StateTransactionRequest OutboxRequest(
+        this EventData[] events,
+        string streamHeadKey,
+        JsonSerializerOptions serializerOptions)
+        => new(
+               key: streamHeadKey,
+               value: JsonSerializer.SerializeToUtf8Bytes(events, serializerOptions),
+               operationType: StateOperationType.Upsert,
+               metadata: new Dictionary<string, string>
+               {
+                { "outbox.projection", "true" },
+                { "contentType", "application/json" },
+                { "datacontenttype", "application/json" }
+               }
+           );
+
+    public static StateTransactionRequest CreateStreamHeadStateRequest(
+        this StreamHead head,
+        string streamHeadKey,
+        string headetag,
+        Dictionary<string, string> meta)
+        => new(streamHeadKey, JsonSerializer.SerializeToUtf8Bytes(head), StateOperationType.Upsert,
             metadata: meta,
             etag: string.IsNullOrWhiteSpace(headetag) ? null : headetag);
-        var reqs = new List<StateTransactionRequest>();
-        reqs.AddRange(eventsReq);
-        reqs.Add(headReq);
 
-        //var outboxOperations = versionedEvents.Select(x => new StateTransactionRequest(
-        //key: Naming.StreamKey(streamName, x.Version),
-        //       value: JsonSerializer.SerializeToUtf8Bytes(new[] { new SampleEvent(Guid.NewGuid(), "temp pub") }, client.JsonSerializerOptions),
-        //       operationType: StateOperationType.Upsert,
-        //       metadata: new Dictionary<string, string>
-        //       {
-        //        { "outbox.projection", "true" },
-        //        { "contentType", "application/json" },
-        //        { "datacontenttype", "application/json" }
-        //       }
-        //   ));
-
-        //reqs.AddRange(outboxOperations);
-
-        await client.ExecuteStateTransactionAsync(storeName, reqs, metadata: meta);
-    }
+    public static IEnumerable<StateTransactionRequest> CreateEventStateRequests(
+        this IEnumerable<EventData> events,
+        string streamName,
+        Dictionary<string, string> meta,
+        JsonSerializerOptions serializerOptions)
+        => events.Select(x => new StateTransactionRequest(
+                Naming.StreamKey(streamName, x.Version),
+                JsonSerializer.SerializeToUtf8Bytes(x, serializerOptions), StateOperationType.Upsert, metadata: meta));
 
     public static T EventAs<T>(this EventData eventData, JsonSerializerOptions options = null)
      => eventData.Data switch

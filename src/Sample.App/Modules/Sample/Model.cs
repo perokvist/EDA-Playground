@@ -1,6 +1,6 @@
 ﻿using Sample.App.Core;
 
-namespace Sample.App;
+namespace Sample.App.Modules.Sample;
 
 public record SampleCommand(Guid Id, string Text) : Command(Id);
 public record SampleState(Guid Id, string Text) : State(Id);

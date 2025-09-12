@@ -43,12 +43,12 @@ public class DaprEventStore(global::Dapr.Client.DaprClient client) //, ILogger<D
 
         var newVersion = head.Version + events.Length;
         var versionedEvents = events
-            .Select((e, i) => new EventData(e.EventId, e.EventName, streamName, e.Data, head.Version + (i + 1)))
+            .Select((e, i) => e with { Version = head.Version + (i + 1) })
             .ToArray();
 
         head = new StreamHead(newVersion);
 
-        await client.StateTransactionAsync(StoreName, streamName, streamHeadKey, head, headetag, meta, versionedEvents);
+        await client.EventsTransactionAsync(StoreName, streamName, streamHeadKey, head, headetag, meta, versionedEvents);
 
         return newVersion;
     }
